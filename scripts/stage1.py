@@ -15,6 +15,7 @@ from calendar import monthrange
 from datetime import date, timedelta
 from functools import partial
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+import selenium.webdriver as wd
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,6 +23,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from urllib.parse import parse_qs, urlparse
 
 from stage1_serializer import Stage1Serializer
+
 
 # Formats as %m/%d/%Y, but does not leave leading zeroes on the month or day.
 # Surprisingly, the syntax for this is different across platforms: https://stackoverflow.com/a/2073189/4077294
@@ -128,7 +130,10 @@ def get_n_pages(driver):
 async def main():
     args = parse_args()
     log.basicConfig(level=args.log_level)
-    driver = Chrome()
+    # driver = Chrome()
+    options = wd.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    driver = wd.Chrome(options=options)
 
     step = timedelta(days=1)
     global_start, global_end = dateparser.parse(args.start_date), dateparser.parse(args.end_date)

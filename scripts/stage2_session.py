@@ -1,8 +1,10 @@
 import asyncio
+import cloudscraper
 import math
 import numpy as np
 import platform
 import sys
+import time
 import traceback as tb
 
 from aiohttp import ClientResponse, ClientSession, TCPConnector
@@ -53,9 +55,24 @@ class Stage2Session(object):
         print("ERROR! Extraction failed for the following url: {}".format(url), file=sys.stderr)
 
     async def _get(self, url, average_wait=10, rng_base=2):
+        headers = {
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
+            'cookie': 'cf_chl_2=06312e3a7700449; cf_chl_prog=x12; cf_clearance=5TsyRj6zU.EiXG.TuMJ92HjMexeXFP_U5bRxbEi0s.w-1643250104-0-150; has_js=1; _ga=GA1.2.1680382360.1643250106; _gid=GA1.2.44978531.1643250106; __cf_bm=Zj7jNdFAvLIiUvDiyvJn_lDu7a7hxq.Lu2mdla8wmS0-1643250106-0-AXy7mop3bR/JyyiLUdD89AdI2XTcoL/wYo0ACGAtnBeKd688E+5WM4BP8I30TF3emcFWnoxxh3lj+M900c+hy5SX67XowbdtvNxHSpypj/koGzVoPlPD+TqamazC2BPKfA==; __atssc=internetarchive;1; __atuvc=2|4; __atuvs=61f201ba16039189001',
+            'authority': 'www.gunviolencearchive.org',
+            'method': 'GET',
+            'path': '/incident/1587783',
+            'scheme': 'https',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept-encoding': 'gzip, deflate, br',
+
+            }
+        scraper = cloudscraper.create_scraper()
         while True:
             try:
-                resp = await self._sess.get(url)
+                # resp = await self._sess.get(url)
+                resp = await scraper.get(url)
+                print(resp)
+                exit()
             except Exception as exc:
                 status = _status_from_exception(exc)
                 if not status:

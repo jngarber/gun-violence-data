@@ -8,15 +8,15 @@ GVA_DOMAIN = 'http://www.gunviolencearchive.org'
 
 def _get_info(tr):
     tds = tr.select('td')
-    assert len(tds) == 7
+    assert len(tds) == 8  # was 7 jg
 
-    date, state, city_or_county, address, n_killed, n_injured = [td.contents[0] for td in tds[:6]]
+    date, state, city_or_county, address, n_killed, n_injured = [td.contents[0] for td in tds[1:7]]  # was [0:6]  jg
     n_killed, n_injured = map(int, [n_killed, n_injured])
 
-    incident_a = tds[6].find('a', string='View Incident')
+    incident_a = tds[7].find('a', string='View Incident')  # was 6 jg
     incident_url = GVA_DOMAIN + incident_a['href']
 
-    source_a = tds[6].find('a', string='View Source')
+    source_a = tds[7].find('a', string='View Source')  # was 6 jg
     source_url = source_a['href'] if source_a else ''
 
     return date, state, city_or_county, address, n_killed, n_injured, incident_url, source_url
@@ -43,7 +43,9 @@ class Stage1Serializer(object):
 
     async def _write_page(self, page_url):
         text = await self._gettext(page_url)
-        soup = BeautifulSoup(text, features='html5lib')
+        # soup = BeautifulSoup(text, features='html5lib')
+        # soup = BeautifulSoup(text, 'html5lib')
+        soup = BeautifulSoup(text, 'html.parser')
         trs = soup.select('.responsive tbody tr')
         trs = reversed(trs) # Order by ascending date instead of descending
         infos = map(_get_info, trs)
